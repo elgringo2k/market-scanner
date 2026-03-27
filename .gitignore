@@ -5,5 +5,4 @@ __pycache__/
 *.pyc
 .hypothesis/
 .kiro
-.vscode
 .claude

@@ -59,7 +59,7 @@ Implement a Python scraper that periodically fetches Premier League odds from Od
   - Treat page-load timeout as a failed render and raise `ScraperError`
   - _Requirements: 1.1, 2.1, 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 6. Implement Parser component
+- [x] 6. Implement Parser component
   - Create `src/parser.py` with `parse_listing_page(html: str) -> list[Match]` and `parse_odds_page(html: str, match: Match) -> OddsRecord | None`
   - `parse_listing_page`: extract home team, away team, kickoff datetime (UTC), and odds page URL for each fixture row; auto-generate a UUID `match_id` per match
   - `parse_odds_page`: extract all bookmaker decimal odds rows; derive best odds via `max()` per selection; validate all fields; return `None` and log on any validation failure
@@ -80,7 +80,7 @@ Implement a Python scraper that periodically fetches Premier League odds from Od
     - Generate synthetic odds-page HTML with random bookmaker rows; assert returned `OddsRecord` has non-None values for all required fields
     - **Validates: Requirements 3.1**
 
-- [ ] 7. Implement SupabaseClient
+- [x] 7. Implement SupabaseClient
   - Create `src/supabase_client.py` with `SupabaseClient` class
   - Implement `insert_odds_records(records: list[OddsRecord]) -> None` that calls `to_dict()` on each record and performs a single batch insert
   - On insert failure, log the error and retry once after a 5-second delay; on second failure, log the final error and raise so the runner can exit non-zero
@@ -92,7 +92,7 @@ Implement a Python scraper that periodically fetches Premier League odds from Od
     - Simulate both inserts failing; assert exception is raised and not swallowed
     - _Requirements: 4.3, 4.4_
 
-- [ ] 8. Implement Runner
+- [x] 8. Implement Runner
   - Create `src/runner.py` with an async `run()` function that orchestrates a single end-to-end scrape run
   - Call `Scraper.fetch_listing_page()` → `parse_listing_page()` → abort with non-zero exit if listing fails or returns no matches
   - For each match, call `Scraper.fetch_odds_page()` → `parse_odds_page()`; log and skip on per-match failure
@@ -106,10 +106,10 @@ Implement a Python scraper that periodically fetches Premier League odds from Od
     - Mock individual match page failure; assert that match is skipped and remaining matches are processed
     - _Requirements: 1.3, 1.4, 2.5_
 
-- [ ] 9. Checkpoint — ensure models, logger, scraper, parser, client, and runner all wire together
+- [x] 9. Checkpoint — ensure models, logger, scraper, parser, client, and runner all wire together
   - Ensure all tests written so far pass, ask the user if questions arise.
 
-- [ ] 10. Implement Scheduler
+- [x] 10. Implement Scheduler
   - Create `src/scheduler.py` using APScheduler `BlockingScheduler` with `IntervalTrigger`
   - Read `POLL_INTERVAL_MINUTES` from env (default 10); configure the interval trigger accordingly
   - Use a `threading.Event` flag to prevent concurrent runs: if a run is already in progress, log a warning and skip the trigger
@@ -121,10 +121,10 @@ Implement a Python scraper that periodically fetches Premier League odds from Od
     - Simulate `POLL_INTERVAL_MINUTES` not set; assert scheduler defaults to 10-minute interval
     - _Requirements: 5.2, 5.3_
 
-- [ ] 11. Implement main.py entry point
+- [x] 11. Implement main.py entry point
   - Create `main.py` at the project root that initialises the logger, validates required env vars (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) at startup and raises clearly if missing, then starts the `Scheduler`
   - Load `.env` via `python-dotenv` before reading any env vars
   - _Requirements: 4.5, 5.1, 7.3_
 
-- [ ] 12. Final checkpoint — full test suite passes
+- [x] 12. Final checkpoint — full test suite passes
   - Ensure all tests pass, ask the user if questions arise.

@@ -26,7 +26,7 @@ class Scraper:
 
     def __init__(self) -> None:
         self._delay = float(os.environ.get("PAGE_DELAY_SECONDS", 2))
-        self._timeout = float(os.environ.get("PAGE_TIMEOUT_SECONDS", 15)) * 1000  # ms
+        self._timeout = float(os.environ.get("PAGE_TIMEOUT_SECONDS", 30)) * 1000  # ms
         self._playwright = None
         self._browser: Browser | None = None
 
@@ -74,7 +74,16 @@ class Scraper:
                 except ImportError:
                     logger.warning("playwright-stealth not available; skipping stealth")
 
-                response = await page.goto(url, timeout=self._timeout, wait_until="networkidle")
+                response = await page.goto(url, timeout=self._timeout, wait_until="domcontentloaded")
+                # Wait for actual content rather than relying on networkidle,
+                # which never settles on JS-heavy sites like oddschecker.
+                try:
+                    await page.wait_for_selector(
+                        "tr.match-on, tr[data-event-name], tr.coupon-row, tr.diff-row, tr[data-bk]",
+                        timeout=self._timeout,
+                    )
+                except PlaywrightTimeoutError:
+                    pass  # fall through to block detection / content check
                 status = response.status if response else 0
                 html = await page.content()
 
